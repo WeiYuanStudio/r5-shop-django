@@ -20,7 +20,7 @@ class ProductCategory(models.Model):
         verbose_name_plural = '商品分类'
 
 
-class ProductInfo(models.Model):
+class Product(models.Model):
     """for shop info"""
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=_PRODUCT_NAME_LEN)
@@ -36,18 +36,18 @@ class ProductInfo(models.Model):
 
 
 class Order(models.Model):
-    class OrderStateType(enum.Enum):
-        """type of order"""
-        CREATED = 1
-        PAYED = 2
-        ON_DELIVERY = 3
-        FINISHED = 4
+    STATUS_CHOICES = [
+        ('c', '已创建'),
+        ('p', '已支付'),
+        ('d', '配送中'),
+        ('f', '已完成'),
+    ]
 
     """for order"""
     id = models.AutoField(primary_key=True)
     customer_id = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)  # Todo: deleted
     submit_datetime = models.DateTimeField()
-    state = models.IntegerField(choices=[(type.value, type) for type in OrderStateType])
+    state = models.CharField(choices=STATUS_CHOICES, max_length=1)
     address = models.CharField(max_length=_ORDER_ADDR_LEN)
 
     class Meta:
@@ -58,10 +58,21 @@ class Order(models.Model):
 class OrderExtend(models.Model):
     id = models.AutoField(primary_key=True)
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    product = models.ForeignKey(ProductInfo, null=True, on_delete=models.SET_NULL)
+    product = models.ForeignKey(Product, null=True, on_delete=models.SET_NULL)
     count = models.IntegerField()
     price = models.FloatField()
 
     class Meta:
         verbose_name = '扩展订单'
         verbose_name_plural = '扩展订单'
+
+
+class ShippingAddress(models.Model):
+    id = models.AutoField(primary_key=True)
+    customer_id = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE)  # Todo: deleted
+    address_code = models.CharField(max_length=12)  # use gb 2260
+    customer_name = models.CharField(max_length=256)
+    phone = models.CharField(max_length=16)
+
+    class Meta:
+        verbose_name_plural = verbose_name = '收货地址'
