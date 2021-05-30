@@ -16,8 +16,10 @@ class ProductCategory(models.Model):
     name = models.CharField(max_length=_PRODUCT_CATEGORY_NAME_LEN)
 
     class Meta:
-        verbose_name = '商品分类'
-        verbose_name_plural = '商品分类'
+        verbose_name_plural = verbose_name = '商品分类'
+
+    def __str__(self):
+        return self.name
 
 
 class Product(models.Model):
@@ -31,8 +33,10 @@ class Product(models.Model):
     show = models.BooleanField(default=True)
 
     class Meta:
-        verbose_name = '商品信息'
-        verbose_name_plural = '商品信息'
+        verbose_name_plural = verbose_name = '商品信息'
+
+    def __str__(self):
+        return f'{self.id}: {self.name}'
 
 
 class Order(models.Model):
@@ -51,8 +55,7 @@ class Order(models.Model):
     address = models.CharField(max_length=_ORDER_ADDR_LEN)
 
     class Meta:
-        verbose_name = '订单'
-        verbose_name_plural = '订单'
+        verbose_name_plural = verbose_name = '订单'
 
 
 class OrderExtend(models.Model):
@@ -63,8 +66,7 @@ class OrderExtend(models.Model):
     price = models.FloatField()
 
     class Meta:
-        verbose_name = '扩展订单'
-        verbose_name_plural = '扩展订单'
+        verbose_name_plural = verbose_name = '扩展订单'
 
 
 class ShippingAddress(models.Model):
@@ -76,3 +78,29 @@ class ShippingAddress(models.Model):
 
     class Meta:
         verbose_name_plural = verbose_name = '收货地址'
+
+
+class Announcement(models.Model):
+    id = models.AutoField(primary_key=True)
+    title = models.CharField(max_length=256)
+    content = models.CharField(max_length=1024)
+    date = models.DateTimeField()
+
+    class Meta:
+        verbose_name_plural = verbose_name = '公告中心'
+
+    def __str__(self):
+        return f'{self.id}: {self.title}'
+
+
+class BuyerShow(models.Model):
+    id = models.AutoField(primary_key=True)
+    customer_id = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE)  # Todo: deleted
+    title = models.CharField(max_length=256)
+    content = models.TextField()
+
+    class Meta:
+        verbose_name_plural = verbose_name = '买家秀'
+
+    def __str__(self):
+        return f'{self.id}: {self.title}'

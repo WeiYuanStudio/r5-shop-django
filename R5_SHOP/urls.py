@@ -17,13 +17,16 @@ from django.contrib import admin
 from django.urls import path, include
 
 from rest_framework import routers
+from rest_framework.authtoken.views import obtain_auth_token
+
 from shop import views
 
 router = routers.DefaultRouter()
 router.register(r'products', views.ProductViewSet)
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('api/', include(router.urls)),
-    path('api-auth/', include('rest_framework.urls', namespace='rest_framework'))
+    path('admin/', admin.site.urls),  # for admin panel
+    path('api/', include(router.urls)),  # for restful api endpoint
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),  # for web restful client login
+    path('api-token-auth/', obtain_auth_token)  # for restful client get api token, post {username, password}
 ]
