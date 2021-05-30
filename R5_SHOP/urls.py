@@ -23,6 +23,7 @@ from shop import views
 
 router = routers.DefaultRouter()
 router.register(r'products', views.ProductViewSet)
+router.register(r'announcements', views.AnnouncementViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),  # for admin panel
