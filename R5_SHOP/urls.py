@@ -19,15 +19,16 @@ from django.urls import path, include
 from rest_framework import routers
 from rest_framework.authtoken.views import obtain_auth_token
 
-from shop import views
+from shop import view_sets
 
-router = routers.DefaultRouter()
-router.register(r'products', views.ProductViewSet)
-router.register(r'announcements', views.AnnouncementViewSet)
+rest_router = routers.DefaultRouter()
+rest_router.register(r'products', view_sets.ProductViewSet)
+rest_router.register(r'announcements', view_sets.AnnouncementViewSet)
+rest_router.register(r'users', view_sets.UserViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),  # for admin panel
-    path('api/', include(router.urls)),  # for restful api endpoint
+    path('api/', include(rest_router.urls)),  # for restful api endpoint
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),  # for web restful client login
     path('api-token-auth/', obtain_auth_token)  # for restful client get api token, post {username, password}
 ]
