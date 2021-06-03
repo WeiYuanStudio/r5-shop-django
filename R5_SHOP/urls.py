@@ -25,6 +25,7 @@ rest_router = routers.DefaultRouter()
 rest_router.register(r'products', view_sets.ProductViewSet)
 rest_router.register(r'announcements', view_sets.AnnouncementViewSet)
 rest_router.register(r'users', view_sets.UserViewSet)
+rest_router.register(r'buyer-show', view_sets.BuyerShowViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),  # for admin panel

@@ -49,7 +49,7 @@ class Order(models.Model):
 
     """for order"""
     id = models.AutoField(primary_key=True)
-    customer_id = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)  # Todo: deleted
+    customer = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)  # Todo: deleted
     submit_datetime = models.DateTimeField()
     state = models.CharField(choices=STATUS_CHOICES, max_length=1)
     address = models.CharField(max_length=_ORDER_ADDR_LEN)
@@ -71,7 +71,7 @@ class OrderExtend(models.Model):
 
 class ShippingAddress(models.Model):
     id = models.AutoField(primary_key=True)
-    customer_id = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE)  # Todo: deleted
+    customer = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE)  # Todo: deleted
     address_code = models.CharField(max_length=12)  # use gb 2260
     customer_name = models.CharField(max_length=256)
     phone = models.CharField(max_length=16)
@@ -95,7 +95,7 @@ class Announcement(models.Model):
 
 class BuyerShow(models.Model):
     id = models.AutoField(primary_key=True)
-    customer_id = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE)  # Todo: deleted
+    customer = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE)  # Todo: deleted
     title = models.CharField(max_length=256)
     content = models.TextField()
 

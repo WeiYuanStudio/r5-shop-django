@@ -5,7 +5,7 @@ from rest_framework import serializers
 
 from django.contrib.auth.models import User
 
-from .models import Product, Announcement
+from .models import Product, Announcement, BuyerShow
 
 
 class ProductSerializer(serializers.HyperlinkedModelSerializer):
@@ -23,4 +23,16 @@ class AnnouncementSerializer(serializers.HyperlinkedModelSerializer):
 class UserSerializers(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['username', 'email', 'is_active', 'date_joined', 'last_login']
+        fields = ['id', 'username', 'email', 'is_active', 'groups', 'date_joined', 'last_login']
+
+
+class BuyerSerializers(serializers.ModelSerializer):
+    """
+    Todo:
+    1. fix post customer id auto get
+    2. fix unauth user post
+    """
+
+    class Meta:
+        model = BuyerShow
+        fields = ['id', 'title', 'customer', 'content']
