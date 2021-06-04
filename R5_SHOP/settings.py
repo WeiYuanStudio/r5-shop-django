@@ -131,7 +131,8 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 100,
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.BasicAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',  # for http basic auth
+        'rest_framework.authentication.SessionAuthentication',  # for api document login
+        'rest_framework.authentication.TokenAuthentication',  # for api Token auth
     ]
 }

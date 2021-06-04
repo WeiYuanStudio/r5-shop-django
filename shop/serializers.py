@@ -5,7 +5,7 @@ from rest_framework import serializers
 
 from django.contrib.auth.models import User
 
-from .models import Product, Announcement, BuyerShow
+from .models import Product, Announcement, BuyerShow, ShippingAddress
 
 
 class ProductSerializer(serializers.HyperlinkedModelSerializer):
@@ -36,3 +36,9 @@ class BuyerSerializers(serializers.ModelSerializer):
     class Meta:
         model = BuyerShow
         fields = ['id', 'title', 'customer', 'content']
+
+
+class ShippingAddressSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = ShippingAddress
+        fields = ['id', 'customer', 'address_code', 'customer_name', 'phone']

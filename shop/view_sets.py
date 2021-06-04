@@ -4,12 +4,14 @@ View set for models
 from django.db import IntegrityError
 from rest_framework import viewsets
 from rest_framework import permissions
+from rest_framework import status
 from rest_framework.response import Response
 
 from django.contrib.auth.models import User
 
-from .models import Product, Announcement, BuyerShow
-from .serializers import ProductSerializer, AnnouncementSerializer, UserSerializers, BuyerSerializers
+from .models import Product, Announcement, BuyerShow, ShippingAddress
+from .serializers import ProductSerializer, AnnouncementSerializer, UserSerializers, BuyerSerializers, \
+    ShippingAddressSerializers
 
 
 class ProductViewSet(viewsets.ReadOnlyModelViewSet):
@@ -60,10 +62,43 @@ class UserViewSet(viewsets.ModelViewSet):  # Todo:Override other method for secu
 
         except IntegrityError as e:
             if 'username' in e.__str__():
-                return Response({"message": "username invalid"}, 500)
+                return Response({"message": "username invalid"}, status.HTTP_400_BAD_REQUEST)
 
             print(e.__cause__)
-            return Response({"message": "unknown error"}, 500)
+            return Response({"message": "unknown error"}, status.HTTP_400_BAD_REQUEST)
 
         except KeyError:
-            return Response({"message": "model illegal! please check your post json model"}, 500)
+            return Response({"message": "model illegal! please check your post json model"},
+                            status.HTTP_400_BAD_REQUEST)
+
+
+class ShippingAddressViewSet(viewsets.ModelViewSet):
+    queryset = ShippingAddress.objects.all()
+    serializer_class = ShippingAddressSerializers
+    permission_classes = [permissions.IsAuthenticated]
+
+    def create(self, request, *args, **kwargs):
+        try:
+            r = request.data
+            ShippingAddress.objects.create(customer=self.request.user,
+                                           address_code=r['address_code'],
+                                           customer_name=r['customer_name'],
+                                           phone=r['phone'])
+
+            return Response({"message": "ok"})
+
+        except IntegrityError as e:
+            if 'username' in e.__str__():
+                return Response({"message": "username invalid"}, status.HTTP_400_BAD_REQUEST)
+
+            print(e.__cause__)
+            return Response({"message": "unknown error"}, status.HTTP_400_BAD_REQUEST)
+
+        except KeyError:
+            return Response({"message": "model illegal! please check your post json model"},
+                            status.HTTP_400_BAD_REQUEST)
+
+    def get_queryset(self):
+        if self.action == 'list':
+            return ShippingAddress.objects.filter(customer=self.request.user.id)  # only return self addr
+        return super().get_queryset()
