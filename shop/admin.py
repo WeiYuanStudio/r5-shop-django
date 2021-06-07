@@ -35,6 +35,17 @@ class OrderAdmin(admin.ModelAdmin):
     ordering = ['id', 'customer', 'submit_datetime', 'state', 'address']
     list_filter = ('state',)
     search_fields = ('address',)
+    actions = ['set_delivery', 'set_finished']
+
+    @admin.action(description="配送")
+    def set_delivery(self, request, queryset):
+        queryset.update(state='d')
+        self.message_user(request, message="接单成功", level=messages.SUCCESS)
+
+    @admin.action(description="送达")
+    def set_finished(self, request, queryset):
+        queryset.update(state='f')
+        self.message_user(request, message="订单完成", level=messages.SUCCESS)
 
 
 admin.site.register(ProductCategory, ProductCategoryAdmin)
