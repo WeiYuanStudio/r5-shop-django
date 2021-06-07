@@ -30,8 +30,15 @@ class ProductCategoryAdmin(admin.ModelAdmin):
     search_fields = ('name',)
 
 
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ('id', 'customer', 'submit_datetime', 'state', 'address')
+    ordering = ['id', 'customer', 'submit_datetime', 'state', 'address']
+    list_filter = ('state',)
+    search_fields = ('address',)
+
+
 admin.site.register(ProductCategory, ProductCategoryAdmin)
-admin.site.register(Order)
+admin.site.register(Order, OrderAdmin)
 admin.site.register(OrderExtend)
 admin.site.register(ShippingAddress)
 admin.site.register(Product, ProductAdmin)

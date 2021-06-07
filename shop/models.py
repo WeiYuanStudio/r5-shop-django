@@ -57,6 +57,14 @@ class Order(models.Model):
     class Meta:
         verbose_name_plural = verbose_name = '订单'
 
+    def get_state_cn_name(self, state_code):
+        for state in self.STATUS_CHOICES:
+            if state[0] == state_code:
+                return state[1]
+
+    def __str__(self):
+        return f'{self.id}: {self.customer} {self.get_state_cn_name(self.state)} {self.submit_datetime}'
+
 
 class OrderExtend(models.Model):
     id = models.AutoField(primary_key=True)
@@ -72,15 +80,16 @@ class OrderExtend(models.Model):
 class ShippingAddress(models.Model):
     id = models.AutoField(primary_key=True)
     customer = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE)  # Todo: deleted
-    address_code = models.CharField(max_length=12)  # use gb 2260
     customer_name = models.CharField(max_length=256)
     phone = models.CharField(max_length=16)
+    address_code = models.CharField(max_length=12)  # use gb 2260
+    address_detail = models.CharField(max_length=512)
 
     class Meta:
         verbose_name_plural = verbose_name = '收货地址'
 
     def __str__(self):
-        return f'{self.id}: {self.customer}'
+        return f'{self.id}: {self.customer} {self.customer_name} {self.address_detail}'
 
 
 class Announcement(models.Model):
