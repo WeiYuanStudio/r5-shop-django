@@ -1,10 +1,12 @@
 """
 View set for models
 """
+from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from rest_framework import viewsets
 from rest_framework import permissions
 from rest_framework import status
+from rest_framework.decorators import api_view, action
 from rest_framework.response import Response
 
 from django.contrib.auth.models import User
@@ -70,6 +72,15 @@ class UserViewSet(viewsets.ModelViewSet):  # Todo:Override other method for secu
         except KeyError:
             return Response({"message": "model illegal! please check your post json model"},
                             status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=False, methods=['GET'])
+    def get_self_user_info(self, request):
+        """get user self info"""
+        """return user self info"""
+        user = User.objects.filter(id=request.user.id).first()
+        require_key = ['id', 'username', 'email', 'is_staff', 'date_joined', 'is_superuser']
+        user_info = {key: user.__dict__[key] for key in require_key}
+        return Response(user_info)
 
 
 class ShippingAddressViewSet(viewsets.ModelViewSet):

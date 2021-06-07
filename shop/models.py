@@ -79,12 +79,15 @@ class ShippingAddress(models.Model):
     class Meta:
         verbose_name_plural = verbose_name = '收货地址'
 
+    def __str__(self):
+        return f'{self.id}: {self.customer}'
+
 
 class Announcement(models.Model):
     id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=256)
     content = models.CharField(max_length=1024)
-    date = models.DateTimeField()
+    datetime = models.DateTimeField()
 
     class Meta:
         verbose_name_plural = verbose_name = '公告中心'
@@ -95,6 +98,7 @@ class Announcement(models.Model):
 
 class BuyerShow(models.Model):
     id = models.AutoField(primary_key=True)
+    publish_datetime = models.DateTimeField()
     customer = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE)  # Todo: deleted
     title = models.CharField(max_length=256)
     content = models.TextField()
