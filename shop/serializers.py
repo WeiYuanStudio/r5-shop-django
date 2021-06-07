@@ -11,7 +11,7 @@ from .models import Product, Announcement, BuyerShow, ShippingAddress
 class ProductSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Product
-        fields = ['name', 'image', 'price', 'stock']
+        fields = ['id', 'name', 'image', 'price', 'stock']
 
 
 class AnnouncementSerializer(serializers.HyperlinkedModelSerializer):
