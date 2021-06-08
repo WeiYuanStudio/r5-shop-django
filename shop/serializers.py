@@ -17,7 +17,7 @@ class ProductSerializer(serializers.HyperlinkedModelSerializer):
 class AnnouncementSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Announcement
-        fields = ['id', 'title', 'content', 'date']
+        fields = ['id', 'title', 'content', 'datetime']
 
 
 class UserSerializers(serializers.ModelSerializer):
@@ -26,7 +26,7 @@ class UserSerializers(serializers.ModelSerializer):
         fields = ['id', 'username', 'email', 'is_active', 'groups', 'date_joined', 'last_login']
 
 
-class BuyerSerializers(serializers.ModelSerializer):
+class BuyerShowSerializers(serializers.ModelSerializer):
     """
     Todo:
     1. fix post customer id auto get
@@ -35,10 +35,10 @@ class BuyerSerializers(serializers.ModelSerializer):
 
     class Meta:
         model = BuyerShow
-        fields = ['id', 'title', 'customer', 'content']
+        fields = '__all__'
 
 
 class ShippingAddressSerializers(serializers.ModelSerializer):
     class Meta:
         model = ShippingAddress
-        fields = ['id', 'customer', 'address_code', 'customer_name', 'phone']
+        fields = '__all__'

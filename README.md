@@ -16,3 +16,9 @@ backend for r5 shop base on `django` `django-rest-framework`
 - django admin `/admin/`
 - resftul api `/api/`
 - restful api get token `/api-token-auth/`
+
+## Data Model Modify
+
+1. after modify model
+2. use `python manage.py makemigrations` generate python orm migration code
+3. use `python manage.py migrate` excute database modify

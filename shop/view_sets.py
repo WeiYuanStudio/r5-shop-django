@@ -12,7 +12,7 @@ from rest_framework.response import Response
 from django.contrib.auth.models import User
 
 from .models import Product, Announcement, BuyerShow, ShippingAddress
-from .serializers import ProductSerializer, AnnouncementSerializer, UserSerializers, BuyerSerializers, \
+from .serializers import ProductSerializer, AnnouncementSerializer, UserSerializers, BuyerShowSerializers, \
     ShippingAddressSerializers
 
 
@@ -26,12 +26,12 @@ class AnnouncementViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Announcement.objects.all()
     sorted = ['date']
     serializer_class = AnnouncementSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
 
 
 class BuyerShowViewSet(viewsets.ModelViewSet):
     queryset = BuyerShow.objects.all()
-    serializer_class = BuyerSerializers
+    serializer_class = BuyerShowSerializers
     permission_classes = [permissions.AllowAny]
 
     def get_permissions(self):
@@ -92,9 +92,10 @@ class ShippingAddressViewSet(viewsets.ModelViewSet):
         try:
             r = request.data
             ShippingAddress.objects.create(customer=self.request.user,
-                                           address_code=r['address_code'],
                                            customer_name=r['customer_name'],
-                                           phone=r['phone'])
+                                           phone=r['phone'],
+                                           address_code=r['address_code'],
+                                           address_detail=r['address_detail'])
 
             return Response({"message": "ok"})
 
