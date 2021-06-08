@@ -19,14 +19,13 @@ from .serializers import ProductSerializer, AnnouncementSerializer, UserSerializ
 
 
 class ProductViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Product.objects.all()
+    queryset = Product.objects.filter(show=True)
     serializer_class = ProductSerializer
     permission_classes = [permissions.AllowAny]
 
 
 class AnnouncementViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Announcement.objects.all()
-    sorted = ['date']
     serializer_class = AnnouncementSerializer
     permission_classes = [permissions.AllowAny]
 

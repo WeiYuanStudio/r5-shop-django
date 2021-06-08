@@ -8,10 +8,11 @@ from django.contrib.auth.models import User
 from .models import Product, Announcement, BuyerShow, ShippingAddress
 
 
-class ProductSerializer(serializers.HyperlinkedModelSerializer):
+class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ['id', 'name', 'image', 'price', 'stock']
+        exclude = ['show']
+        depth = 1
 
 
 class AnnouncementSerializer(serializers.HyperlinkedModelSerializer):
