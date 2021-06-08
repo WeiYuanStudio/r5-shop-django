@@ -1,6 +1,8 @@
 """
 View set for models
 """
+from datetime import datetime
+
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from rest_framework import viewsets
@@ -42,11 +44,17 @@ class BuyerShowViewSet(viewsets.ModelViewSet):
             permission_classes = [permissions.IsAuthenticated]
         return [permission() for permission in permission_classes]
 
-    # Todo: 通过auth获得 customer id
-    # def create(self, request, *args, **kwargs):
-    #     post_user_id = request.user.id
-    #     request.data['customer'] = post_user_id
-    #     return super().create(request, *args, **kwargs)
+    def create(self, request, *args, **kwargs):
+        try:
+            r = request.data
+            BuyerShow.objects.create(publish_datetime=datetime.now(),
+                                     customer=request.user,
+                                     title=r['title'],
+                                     content=r['content'])
+            return Response({"message": "ok"})
+
+        except KeyError as e:
+            return Response({"message": "json obj error"}, status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class UserViewSet(viewsets.ModelViewSet):  # Todo:Override other method for secure
