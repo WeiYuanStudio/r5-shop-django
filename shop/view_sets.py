@@ -82,10 +82,12 @@ class UserViewSet(viewsets.ModelViewSet):  # Todo:Override other method for secu
 
     @action(detail=False, methods=['GET'])
     def get_self_user_info(self, request):
-        """get user self info"""
         """return user self info"""
+        if request.user.id is None:
+            return Response({"message": "please login"})
+
         user = User.objects.filter(id=request.user.id).first()
-        require_key = ['id', 'username', 'email', 'is_staff', 'date_joined', 'is_superuser']
+        require_key = ['id', 'username', 'email', 'is_staff', 'date_joined']
         user_info = {key: user.__dict__[key] for key in require_key}
         return Response(user_info)
 
