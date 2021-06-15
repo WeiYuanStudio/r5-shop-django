@@ -28,6 +28,8 @@ rest_router.register(r'users', view_sets.UserViewSet)
 rest_router.register(r'buyer-show', view_sets.BuyerShowViewSet)
 rest_router.register(r'shipping-address', view_sets.ShippingAddressViewSet)
 rest_router.register(r'order', view_sets.OrderViewSet)
+rest_router.register(r'order-extend', view_sets.OrderExtendViewSet)
+rest_router.register(r'product-category', view_sets.ProductCategoryViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),  # for admin panel

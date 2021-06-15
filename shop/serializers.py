@@ -5,7 +5,7 @@ from rest_framework import serializers
 
 from django.contrib.auth.models import User
 
-from .models import Product, Announcement, BuyerShow, ShippingAddress, Order
+from .models import Product, Announcement, BuyerShow, ShippingAddress, Order, OrderExtend, ProductCategory
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -48,4 +48,17 @@ class ShippingAddressSerializers(serializers.ModelSerializer):
 class OrderSerializers(serializers.ModelSerializer):
     class Meta:
         model = Order
+        fields = '__all__'
+
+
+class OrderExtendSerializers(serializers.ModelSerializer):
+    class Meta:
+        model = OrderExtend
+        fields = '__all__'
+        depth = 1
+
+
+class ProductCategorySerializers(serializers.ModelSerializer):
+    class Meta:
+        model = ProductCategory
         fields = '__all__'

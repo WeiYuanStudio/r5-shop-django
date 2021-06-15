@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     # ---- project apps ----
+    'django_filters',
     'rest_framework',
     'rest_framework.authtoken',
     'shop'
@@ -134,5 +135,6 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',  # for api Token auth
         'rest_framework.authentication.BasicAuthentication',  # for http basic auth
         'rest_framework.authentication.SessionAuthentication',  # for api document login
-    ]
+    ],
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
 }

@@ -3,20 +3,21 @@ View set for models
 """
 from datetime import datetime
 
-from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError, transaction
 from django.db.models import F
+from django_filters import filters
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets
 from rest_framework import permissions
 from rest_framework import status
-from rest_framework.decorators import api_view, action
+from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from django.contrib.auth.models import User
 
-from .models import Product, Announcement, BuyerShow, ShippingAddress, Order, OrderExtend
+from .models import Product, Announcement, BuyerShow, ShippingAddress, Order, OrderExtend, ProductCategory
 from .serializers import ProductSerializer, AnnouncementSerializer, UserSerializers, BuyerShowSerializers, \
-    ShippingAddressSerializers, OrderSerializers
+    ShippingAddressSerializers, OrderSerializers, OrderExtendSerializers, ProductCategorySerializers
 
 
 class ProductViewSet(viewsets.ReadOnlyModelViewSet):
@@ -32,9 +33,11 @@ class AnnouncementViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class BuyerShowViewSet(viewsets.ModelViewSet):
-    queryset = BuyerShow.objects.all()
+    queryset = BuyerShow.objects.order_by('-publish_datetime')
     serializer_class = BuyerShowSerializers
     permission_classes = [permissions.AllowAny]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['customer']
 
     def get_permissions(self):
         """未登录不给写权限"""
@@ -134,28 +137,66 @@ class OrderViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         print(request.data)
 
-        with transaction.atomic():
-            address = request.data.get('addressInfo')
-            cart = request.data.get('cartInfo')
+        try:
+            with transaction.atomic():
+                address = request.data.get('addressInfo')
+                cart = request.data.get('cartInfo')
 
-            order = Order.objects.create(customer=self.request.user,
-                                         submit_datetime=datetime.now(),
-                                         state='p',
-                                         address=address['address'])
+                order = Order.objects.create(customer=self.request.user,
+                                             submit_datetime=datetime.now(),
+                                             state='p',
+                                             customer_name=address['name'],
+                                             phone=address['tel'],
+                                             address_code='',
+                                             address_detail=address['address'],
+                                             price=0)
 
-            for cart_id, cart_num in cart.items():
-                if cart_num != 0:
-                    # 减库存
-                    product = Product.objects.get(id=cart_id)
-                    product.stock = F('stock') - cart_num
-                    product.save()
-                    # 计算子订单需要的信息[单件总价]
-                    product = Product.objects.get(id=cart_id)
-                    each_product_sum = product.price * cart_num
-                    # 增加子订单
-                    OrderExtend.objects.create(order=order,
-                                               product=product,
-                                               count=cart_num,
-                                               price=each_product_sum)
+                order_sum = 0
+
+                for cart_id, cart_num in cart.items():
+                    if cart_num != 0:
+                        # 减库存
+                        product = Product.objects.get(id=cart_id)
+                        product.stock = F('stock') - cart_num
+                        product.save()
+                        # 检查库存
+                        if Product.objects.get(id=cart_id).stock < 0:
+                            raise RuntimeError('库存不足，下单失败')
+                        # 计算子订单需要的信息[单件总价]
+                        product = Product.objects.get(id=cart_id)
+                        each_product_sum = product.price * cart_num
+                        # 增加子订单
+                        OrderExtend.objects.create(order=order,
+                                                   product=product,
+                                                   count=cart_num,
+                                                   price=each_product_sum)
+
+                        order_sum += each_product_sum
+
+                # 写入总金额
+                order.price = order_sum
+                order.save()
+
+        except RuntimeError as e:
+            return Response({"message": e.__str__()}, status.HTTP_400_BAD_REQUEST)
 
         return Response({"message": "OK"})
+
+    def get_queryset(self):
+        if self.action == 'list':
+            return Order.objects.filter(customer=self.request.user.id).order_by('-id')  # only return self addr
+        return super().get_queryset()
+
+
+class OrderExtendViewSet(viewsets.ModelViewSet):
+    queryset = OrderExtend.objects.all()
+    serializer_class = OrderExtendSerializers
+    permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['order']
+
+
+class ProductCategoryViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = ProductCategory.objects.all()
+    serializer_class = ProductCategorySerializers
+    permission_classes = [permissions.AllowAny]

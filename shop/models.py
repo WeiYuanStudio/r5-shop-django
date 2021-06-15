@@ -52,7 +52,11 @@ class Order(models.Model):
     customer = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)  # Todo: deleted
     submit_datetime = models.DateTimeField()
     state = models.CharField(choices=STATUS_CHOICES, max_length=1)
-    address = models.CharField(max_length=_ORDER_ADDR_LEN)
+    customer_name = models.CharField(max_length=256)
+    phone = models.CharField(max_length=16)
+    address_code = models.CharField(max_length=12)  # use gb 2260
+    address_detail = models.CharField(max_length=_ORDER_ADDR_LEN)
+    price = models.FloatField()
 
     class Meta:
         verbose_name_plural = verbose_name = '订单'

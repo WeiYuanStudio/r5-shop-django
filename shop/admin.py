@@ -31,8 +31,8 @@ class ProductCategoryAdmin(admin.ModelAdmin):
 
 
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('id', 'customer', 'submit_datetime', 'state', 'address')
-    ordering = ['id', 'customer', 'submit_datetime', 'state', 'address']
+    list_display = ('id', 'customer', 'submit_datetime', 'state', 'address_detail')
+    ordering = ['id', 'customer', 'submit_datetime', 'state', 'address_detail']
     list_filter = ('state',)
     search_fields = ('address',)
     actions = ['set_delivery', 'set_finished']
