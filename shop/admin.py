@@ -31,7 +31,7 @@ class ProductCategoryAdmin(admin.ModelAdmin):
 
 
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('id', 'customer', 'submit_datetime', 'state', 'address_detail')
+    list_display = ('id', 'customer', 'submit_datetime', 'state', 'phone', 'address_detail', 'price')
     ordering = ['id', 'customer', 'submit_datetime', 'state', 'address_detail']
     list_filter = ('state',)
     search_fields = ('address',)
@@ -48,10 +48,18 @@ class OrderAdmin(admin.ModelAdmin):
         self.message_user(request, message="订单完成", level=messages.SUCCESS)
 
 
+class ShippingAddressAdmin(admin.ModelAdmin):
+    list_display = ('id', 'customer', 'customer_name', 'phone', 'address_code', 'address_detail')
+
+
+class OrderExtendAdmin(admin.ModelAdmin):
+    list_display = ('id', 'order', 'product', 'count', 'price')
+
+
 admin.site.register(ProductCategory, ProductCategoryAdmin)
 admin.site.register(Order, OrderAdmin)
-admin.site.register(OrderExtend)
-admin.site.register(ShippingAddress)
+admin.site.register(OrderExtend, OrderExtendAdmin)
+admin.site.register(ShippingAddress, ShippingAddressAdmin)
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Announcement)
 admin.site.register(BuyerShow)

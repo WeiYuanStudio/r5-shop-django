@@ -27,7 +27,7 @@ class ProductViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class AnnouncementViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Announcement.objects.all()
+    queryset = Announcement.objects.order_by('-datetime')
     serializer_class = AnnouncementSerializer
     permission_classes = [permissions.AllowAny]
 
