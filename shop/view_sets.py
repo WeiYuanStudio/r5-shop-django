@@ -4,7 +4,8 @@ View set for models
 from datetime import datetime
 
 from django.contrib.auth.decorators import login_required
-from django.db import IntegrityError
+from django.db import IntegrityError, transaction
+from django.db.models import F
 from rest_framework import viewsets
 from rest_framework import permissions
 from rest_framework import status
@@ -13,9 +14,9 @@ from rest_framework.response import Response
 
 from django.contrib.auth.models import User
 
-from .models import Product, Announcement, BuyerShow, ShippingAddress
+from .models import Product, Announcement, BuyerShow, ShippingAddress, Order, OrderExtend
 from .serializers import ProductSerializer, AnnouncementSerializer, UserSerializers, BuyerShowSerializers, \
-    ShippingAddressSerializers
+    ShippingAddressSerializers, OrderSerializers
 
 
 class ProductViewSet(viewsets.ReadOnlyModelViewSet):
@@ -123,3 +124,38 @@ class ShippingAddressViewSet(viewsets.ModelViewSet):
         if self.action == 'list':
             return ShippingAddress.objects.filter(customer=self.request.user.id)  # only return self addr
         return super().get_queryset()
+
+
+class OrderViewSet(viewsets.ModelViewSet):
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializers
+    permission_classes = [permissions.IsAuthenticated]
+
+    def create(self, request, *args, **kwargs):
+        print(request.data)
+
+        with transaction.atomic():
+            address = request.data.get('addressInfo')
+            cart = request.data.get('cartInfo')
+
+            order = Order.objects.create(customer=self.request.user,
+                                         submit_datetime=datetime.now(),
+                                         state='p',
+                                         address=address['address'])
+
+            for cart_id, cart_num in cart.items():
+                if cart_num != 0:
+                    # 减库存
+                    product = Product.objects.get(id=cart_id)
+                    product.stock = F('stock') - cart_num
+                    product.save()
+                    # 计算子订单需要的信息[单件总价]
+                    product = Product.objects.get(id=cart_id)
+                    each_product_sum = product.price * cart_num
+                    # 增加子订单
+                    OrderExtend.objects.create(order=order,
+                                               product=product,
+                                               count=cart_num,
+                                               price=each_product_sum)
+
+        return Response({"message": "OK"})
